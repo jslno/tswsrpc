@@ -1,33 +1,17 @@
 import { client as wsClient } from "rpcws/client";
-import type { ServerEvents } from ".";
+import type { serverEvents } from ".";
+import { z } from "zod";
 
-const events = wsClient.$forwardEvents([
-	wsClient.$event(
-		{
-			id: "pong",
-		},
-		() => {
-			console.log("PONG");
-		},
-	),
-	wsClient.$event(
-		{
-			id: "ping",
-		},
-		(_, ctx) => {
-			console.log("PING");
-			ctx.emit.pong();
-		},
-	),
-]);
-
-export type ClientEvents = typeof events;
-
-export const client = wsClient<ServerEvents>()({
-	address: "ws://localhost:8000",
-	events,
+export const clientEvents = wsClient.$eventRegistry({
+	"root.message": z.string(),
 });
 
-setTimeout(() => {
-	client.emit.ping();
-}, 3000);
+export const client = wsClient<typeof serverEvents>()({
+	address: "ws://localhost:8000",
+	events: clientEvents,
+});
+
+client.on.root.message((msg) => {
+	console.log("Received from server:", msg);
+	client.emit.message("PONG");
+});

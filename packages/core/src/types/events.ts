@@ -1,43 +1,42 @@
 import type { StandardSchemaV1 } from "../utils/standard-schema";
-import type { LiteralString, Prettify, Promisable, UnionToIntersection } from "./utils";
+import type { Prettify, Promisable, UnionToIntersection } from "./utils";
 
-type PathToObject<T extends string, Value = any> = T extends `${infer Key}.${infer Rest}`
-	? { [K in Key]: PathToObject<Rest, Value> }
-	: { [K in T]: Value };
+export type EventDefinitions = {
+	[key: string]: StandardSchemaV1 | null | undefined;
+};
 
-export type InferEventHandlers<T extends Event[]> = Prettify<
-	UnionToIntersection<
-		T extends Array<infer I extends Event>
-			? PathToObject<I["id"], InferEventInputHandler<I>>
-			: {}
-	>
+type _InferEventInputHandlers<T extends EventDefinitions> = {
+	[K in keyof T]: K extends `${infer First}.${infer Rest}`
+		? { [key in First]: _InferEventInputHandlers<{ [key in Rest]: T[K] }> }
+		: { [key in K]: InferEventInputHandler<T[K]> };
+}[keyof T];
+
+export type InferEventInputHandlers<T extends EventDefinitions> = Prettify<
+	UnionToIntersection<_InferEventInputHandlers<T>>
 >;
 
-export type EventOptions = {
-	id: LiteralString;
-	type?: StandardSchemaV1;
-};
+export type InferEventInputHandler<T extends EventDefinitions[keyof EventDefinitions]> =
+	T extends StandardSchemaV1
+		? undefined extends StandardSchemaV1.InferInput<T>
+			? (data?: StandardSchemaV1.InferInput<T>) => Promisable<void>
+			: (data: StandardSchemaV1.InferInput<T>) => Promisable<void>
+		: () => Promisable<void>;
 
-export type InferEventInputType<T> = T extends StandardSchemaV1
-	? StandardSchemaV1.InferInput<T>
-	: undefined;
-export type InferEventOutputType<T> = T extends StandardSchemaV1
-	? StandardSchemaV1.InferOutput<T>
-	: undefined;
+type _InferEventOutputHandlers<T extends EventDefinitions> = {
+	[K in keyof T]: K extends `${infer First}.${infer Rest}`
+		? { [key in First]: _InferEventOutputHandlers<{ [key in Rest]: T[K] }> }
+		: { [key in K]: InferEventOutputHandler<T[K]> };
+}[keyof T];
 
-export type InferEventOutputHandler<T extends EventOptions> = (
-	data: InferEventOutputType<T["type"]>,
-	ctx: { emit: any },
-) => Promisable<void>;
+export type InferEventOutputHandlers<T extends EventDefinitions> = Prettify<
+	UnionToIntersection<_InferEventOutputHandlers<T>>
+>;
 
-export type InferEventInputHandler<T extends EventOptions> = undefined extends InferEventInputType<
-	T["type"]
->
-	? (data?: InferEventInputType<T["type"]>) => Promisable<void>
-	: (data: InferEventInputType<T["type"]>) => Promisable<void>;
+export type InferEventOutputHandler<T extends EventDefinitions[keyof EventDefinitions]> = (
+	cb: InferEventOutputHandlerCallback<T>,
+) => void;
 
-export type Event = {
-	id: LiteralString;
-	type?: StandardSchemaV1;
-	handler: (data: any, ctx: { emit: any }) => Promise<any> | any;
-};
+export type InferEventOutputHandlerCallback<T extends EventDefinitions[keyof EventDefinitions]> =
+	T extends StandardSchemaV1
+		? (data: StandardSchemaV1.InferOutput<T>) => Promisable<void>
+		: () => Promisable<void>;

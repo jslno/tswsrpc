@@ -1,6 +1,6 @@
 import type { RPCWSOptions } from "./types/options";
 import { WebSocketServer, WebSocket } from "ws";
-import type { Event } from "./event";
+import type { Promisable } from "./types/utils";
 
 export const init = async <O extends RPCWSOptions>(options?: O) => {
 	const server = new WebSocketServer(options?.server);
@@ -14,8 +14,8 @@ export const init = async <O extends RPCWSOptions>(options?: O) => {
 	const ctx = {
 		server,
 		ws,
-		options: options || {},
-		events: (options?.events || []) as Exclude<O["events"], undefined>,
+		options: (options || {}) as O,
+		events: new Map<string, (data: any) => Promisable<void>>(),
 	};
 
 	return ctx satisfies RPCWSContext;
@@ -25,5 +25,5 @@ export type RPCWSContext = {
 	server: WebSocketServer;
 	ws: WebSocket;
 	options: RPCWSOptions;
-	events: Event[];
+	events: Map<string, (data: any) => Promisable<void>>;
 };

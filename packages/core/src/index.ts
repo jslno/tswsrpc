@@ -1,34 +1,36 @@
-import { event as $event, forwardEvents as $forwardEvents } from "./event";
 import type { RPCWSOptions } from "./types/options";
 import { init } from "./init";
-import { createProxy } from "./proxy";
-import type { InferEventHandlers, Event } from "./types/events";
+import { createEmitProxy, createOnProxy } from "./proxy";
 import { standardValidate } from "./utils/standard-schema";
+import type { Prettify } from "./types/utils";
+import type {
+	EventDefinitions,
+	InferEventInputHandlers,
+	InferEventOutputHandlers,
+} from "./types/events";
+import { eventRegistry as $eventRegistry } from "./event";
 
 const _rpcws =
-	<
-		T extends Event[] & {
-			__brand: "events";
-		},
-	>() =>
+	<T extends EventDefinitions = {}>() =>
 	async <O extends RPCWSOptions>(options?: O) => {
 		const ctx = await init(options);
 
-		const emit = createProxy(ctx) as any as InferEventHandlers<T>;
+		const emit = createEmitProxy(ctx) as any as Prettify<Readonly<InferEventInputHandlers<T>>>;
+
+		const on = createOnProxy(ctx) as any as Prettify<
+			Readonly<InferEventOutputHandlers<Exclude<O["events"], undefined>>>
+		>;
 
 		ctx.ws.on("message", async (message) => {
 			const body = JSON.parse(message.toString("utf-8"));
 
 			if ("event" in body) {
-				const events = ctx.events.filter((val) => val.id === body.event);
+				const handler = ctx.events.get(body.event);
+				const type = ctx.options.events?.[body.event];
 
-				await Promise.all(
-					events.map(async (e) =>
-						e.handler(e.type ? standardValidate(e.type, body.data) : body.data, {
-							emit,
-						}),
-					),
-				);
+				if (!!handler) {
+					await handler(type ? await standardValidate(type, body.data) : body.data);
+				}
 			}
 		});
 
@@ -37,9 +39,9 @@ const _rpcws =
 		return {
 			$context: ctx,
 			emit,
+			on,
 		};
 	};
 export const rpcws = Object.assign(_rpcws, {
-	$event,
-	$forwardEvents,
+	$eventRegistry,
 });

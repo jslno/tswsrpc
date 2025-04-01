@@ -1,42 +1,26 @@
 import { rpcws } from "rpcws";
 import { z } from "zod";
-import type { ClientEvents } from "./client";
+import type { clientEvents } from "./client";
 
-const events = rpcws.$forwardEvents([
-	rpcws.$event(
-		{
-			id: "ping",
-			type: z.string().optional(),
-		},
-		(_, ctx) => {
-			console.log("PING");
-			ctx.emit.pong();
-		},
-	),
-	rpcws.$event(
-		{
-			id: "pong",
-			type: z.string().optional(),
-		},
-		() => {
-			console.log("PONG");
-		},
-	),
-]);
-
-export type ServerEvents = typeof events;
+export const serverEvents = rpcws.$eventRegistry({
+	message: z.string(),
+});
 
 const main = async () => {
-	const server = await rpcws<ClientEvents>()({
+	const server = await rpcws<typeof clientEvents>()({
 		server: {
 			port: 8000,
 		},
-		events,
+		events: serverEvents,
+	});
+
+	server.on.message((msg) => {
+		console.log("Received from client:", msg);
 	});
 
 	console.log("Websocket server running on ws://localhost:8000");
 
-	await server.emit.ping();
+	await server.emit;
 };
 
 void main();

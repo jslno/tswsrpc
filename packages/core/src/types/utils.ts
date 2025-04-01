@@ -12,4 +12,4 @@ export type UnionToIntersection<U> = (
 	? I & U
 	: never;
 
-export type Promisable<T> = Promise<T> | T
+export type Promisable<T> = Promise<T> | T;
