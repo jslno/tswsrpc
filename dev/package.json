@@ -1,0 +1,19 @@
+{
+  "name": "dev",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n SERVER,CLIENT \"tsx index.ts\" \"tsx client.ts\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "tsx": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "rpcws": "workspace:*",
+    "zod": "^3.24.2"
+  }
+}

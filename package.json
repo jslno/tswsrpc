@@ -1,0 +1,29 @@
+{
+	"name": "rpcws",
+	"version": "0.0.0",
+	"private": true,
+	"packageManager": "pnpm@10.4.1",
+	"scripts": {
+		"build": "turbo --filter \"./packages/*\" build",
+		"dev": "turbo --filter \"./packages/*\" dev",
+		"dev:dts": "turbo --filter \"./packages/*\" dev:dts",
+		"clean": "turbo --filter \"./packages/*\" clean && rm -rf node_modules",
+		"format": "biome format . --write",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"release": "turbo --filter \"./packages/*\" build && bumpp && pnpm -r publish --access public --no-git-checks",
+		"release:no-build": "bumpp && pnpm -r publish --access public --no-git-checks --tag next",
+		"release:canary": "turbo --filter \"./packages/*\" build && bumpp && pnpm -r publish --access public --tag canary --no-git-checks",
+		"bump": "bumpp",
+		"test": "turbo --filter \"./packages/*\" test",
+		"typecheck": "turbo --filter \"./packages/*\" typecheck"
+	},
+	"dependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/node": "^22.13.14",
+		"bumpp": "^10.1.0",
+		"tinyglobby": "^0.2.12",
+		"turbo": "^2.4.4",
+		"typescript": "^5.8.2"
+	}
+}

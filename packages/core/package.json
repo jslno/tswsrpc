@@ -1,0 +1,70 @@
+{
+    "name": "rpcws",
+    "description": "",
+    "version": "0.0.0",
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "scripts": {
+        "build": "tsup --clean --dts",
+        "dev": "tsup --watch --sourcemap",
+        "dev:dts": "tsup --watch --dts",
+        "bump": "bumpp",
+        "test": "vitest",
+        "typecheck": "tsc --noEmit"
+    },
+    "author": {
+        "name": "Joél de Oliveira Solano da Silva",
+        "email": "service@jsolano.de",
+        "url": "https://www.jsolano.de"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jslno/rpcws.git",
+        "directory": "packages/core"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "@biomejs/biome": "^1.9.4",
+        "@types/node": "^22.13.14",
+        "@types/ws": "^8.18.0",
+        "tsup": "^8.4.0",
+        "typescript": "^5.8.2",
+        "vitest": "^3.1.1"
+    },
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            },
+            "require": {
+                "types": "./dist/index.d.cts",
+                "default": "./dist/index.cjs"
+            }
+        },
+        "./client": {
+            "import": {
+                "types": "./dist/client.d.ts",
+                "default": "./dist/client.js"
+            },
+            "require": {
+                "types": "./dist/client.d.cts",
+                "default": "./dist/client.cjs"
+            }
+        },
+        "./event": {
+            "import": {
+                "types": "./dist/event.d.ts",
+                "default": "./dist/event.js"
+            },
+            "require": {
+                "types": "./dist/event.d.cts",
+                "default": "./dist/event.cjs"
+            }
+        }
+    },
+    "dependencies": {
+        "ws": "^8.18.1"
+    }
+}
