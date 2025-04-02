@@ -12,6 +12,11 @@ export type ClientOptions = {
 	address: string | URL;
 	events?: EventDefinitions;
 	advanced?: WebSocket.ClientOptions;
+	lifecycle?: {
+		onOpen?: (event: WebSocket.Event) => Promisable<void>;
+		onError?: (event: WebSocket.ErrorEvent) => Promisable<void>;
+		onClose?: (event: WebSocket.CloseEvent) => Promisable<void>;
+	};
 };
 
 const _client =
@@ -30,6 +35,18 @@ const _client =
 		const on = createOnProxy(ctx) as any as Prettify<
 			Readonly<InferEventOutputHandlers<Exclude<O["events"], undefined>>>
 		>;
+
+		if (ctx.options.lifecycle?.onOpen) {
+			ctx.ws.onopen = ctx.options.lifecycle.onOpen;
+		}
+
+		if (ctx.options.lifecycle?.onClose) {
+			ctx.ws.onclose = ctx.options.lifecycle.onClose;
+		}
+
+		if (ctx.options.lifecycle?.onError) {
+			ctx.ws.onerror = ctx.options.lifecycle.onError;
+		}
 
 		ctx.ws.onmessage = async ({ data }) => {
 			await onMessage(ctx, data);
