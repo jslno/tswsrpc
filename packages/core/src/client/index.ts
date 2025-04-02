@@ -5,11 +5,7 @@ import type {
 	InferEventInputHandlers,
 	InferEventOutputHandlers,
 } from "../types/events";
-import {
-	eventRegistry as $eventRegistry,
-	event as $event,
-	onMessage,
-} from "../event";
+import { eventRegistry as $eventRegistry, event as $event, onMessage } from "../event";
 import { type Promisable, type Prettify } from "../types/utils";
 
 export type ClientOptions = {
