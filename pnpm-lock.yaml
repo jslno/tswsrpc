@@ -29,7 +29,7 @@ importers:
 
   dev:
     dependencies:
-      wsrpc:
+      rpcwebsocket:
         specifier: workspace:*
         version: link:../packages/core
       typescript:

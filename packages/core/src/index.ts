@@ -1,4 +1,4 @@
-import type { WSRPCOptions } from "./types/options";
+import type { RPCWebSocketOptions } from "./types/options";
 import { init } from "./init";
 import { createEmitProxy, createOnProxy } from "./proxy";
 import { standardValidate } from "./utils/standard-schema";
@@ -10,9 +10,9 @@ import type {
 } from "./types/events";
 import { eventRegistry as $eventRegistry } from "./event";
 
-const _wsrpc =
+const _rpcwebsocket =
 	<T extends EventDefinitions = {}>() =>
-	async <O extends WSRPCOptions>(options?: O) => {
+	async <O extends RPCWebSocketOptions>(options?: O) => {
 		const ctx = await init(options);
 
 		const emit = createEmitProxy(ctx) as any as Prettify<Readonly<InferEventInputHandlers<T>>>;
@@ -42,6 +42,6 @@ const _wsrpc =
 			on,
 		};
 	};
-export const wsrpc = Object.assign(_wsrpc, {
+export const rpcwebsocket = Object.assign(_rpcwebsocket, {
 	$eventRegistry,
 });
