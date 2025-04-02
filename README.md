@@ -179,11 +179,11 @@ Distributed under the MIT License. See [LICENSE.md][license-url] for more inform
 [issues-shield]: https://img.shields.io/github/issues/jslno/tswsrpc.svg?style=for-the-badge
 [issues-url]: https://github.com/jslno/tswsrpc/issues
 [license-shield]: https://img.shields.io/github/license/jslno/tswsrpc.svg?style=for-the-badge
-[license-url]: https://github.com/jslno/tswsrpc/blob/master/LICENSE.txt
+[license-url]: https://github.com/jslno/tswsrpc/blob/master/LICENSE.md
 [github-release-shield]: https://img.shields.io/github/v/release/jslno/tswsrpc?style=for-the-badge
-[github-release-url]: github.com/jslno/tswsrpc/releases/latest
+[github-release-url]: https://github.com/jslno/tswsrpc/releases/latest
 [npm-release-shield]: https://img.shields.io/npm/v/tswsrpc?style=for-the-badge
-[npm-release-url]: www.npmjs.com/package/tswsrpc/v/latest
+[npm-release-url]: https://www.npmjs.com/package/tswsrpc/v/latest
 [zod-url]: https://github.com/colinhacks/zod
 [standardschema-url]: https://standardschema.dev
 [standardschema-lib-url]: https://standardschema.dev/#what-schema-libraries-implement-the-spec
