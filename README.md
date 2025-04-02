@@ -50,6 +50,7 @@
 - Bi-directional Communication
 - Schema Validation
   - works with zod, yup and many other validation libraries.
+- Middleware Support
 - Clean & modular structure
 
 <div align="right"><a href="#readme-top">(&ShortUpArrow;)</a></div>
@@ -157,7 +158,6 @@ This setup establishes a bidirectional messaging system with minimal configurati
 ## Roadmap
 
 - [ ] Error Handling
-- [ ] Middleware Support
 
 <div align="right"><a href="#readme-top">(&ShortUpArrow;)</a></div>
 
