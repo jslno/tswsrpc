@@ -8,7 +8,7 @@ import type {
 	InferEventInputHandlers,
 	InferEventOutputHandlers,
 } from "./types/events";
-import { eventRegistry as $eventRegistry } from "./event";
+import { eventRegistry as $eventRegistry, event as $event } from "./event";
 
 const _tswsrpc =
 	<T extends EventDefinitions = {}>() =>
@@ -26,10 +26,25 @@ const _tswsrpc =
 
 			if ("event" in body) {
 				const handler = ctx.events.get(body.event);
-				const type = ctx.options.events?.[body.event];
+				const def = ctx.options.events?.[body.event];
+
+				let eventData = body.data;
+				if (def?.use) {
+					const middlewares = Array.isArray(def.use) ? def.use : [def.use];
+
+					for (const middleware of middlewares) {
+						const res = await middleware(eventData);
+
+						if (!!res) {
+							eventData = res;
+						}
+					}
+				}
 
 				if (!!handler) {
-					await handler(type ? await standardValidate(type, body.data) : body.data);
+					await handler(
+						def?.type ? await standardValidate(def?.type, eventData) : eventData,
+					);
 				}
 			}
 		});
@@ -44,4 +59,5 @@ const _tswsrpc =
 	};
 export const tswsrpc = Object.assign(_tswsrpc, {
 	$eventRegistry,
+	$event,
 });

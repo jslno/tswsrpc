@@ -3,7 +3,9 @@ import { z } from "zod";
 import type { clientEvents } from "./client";
 
 export const serverEvents = tswsrpc.$eventRegistry({
-	message: z.string(),
+	message: {
+		type: z.string(),
+	},
 });
 
 const main = async () => {

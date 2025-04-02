@@ -1,8 +1,13 @@
 import type { StandardSchemaV1 } from "../utils/standard-schema";
 import type { Prettify, Promisable, UnionToIntersection } from "./utils";
 
+export type EventMiddleware = (data: any) => Promisable<any>;
+
 export type EventDefinitions = {
-	[key: string]: StandardSchemaV1 | null | undefined;
+	[key: string]: {
+		type?: StandardSchemaV1 | null | undefined;
+		use?: EventMiddleware | EventMiddleware[];
+	};
 };
 
 type _InferEventInputHandlers<T extends EventDefinitions> = {
@@ -15,12 +20,16 @@ export type InferEventInputHandlers<T extends EventDefinitions> = Prettify<
 	UnionToIntersection<_InferEventInputHandlers<T>>
 >;
 
+export type InferEventInputType<T extends EventDefinitions[keyof EventDefinitions]["type"]> =
+	T extends StandardSchemaV1 ? StandardSchemaV1.InferInput<T> : undefined;
+
+export type InferEventOutputType<T extends EventDefinitions[keyof EventDefinitions]["type"]> =
+	T extends StandardSchemaV1 ? StandardSchemaV1.InferOutput<T> : undefined;
+
 export type InferEventInputHandler<T extends EventDefinitions[keyof EventDefinitions]> =
-	T extends StandardSchemaV1
-		? undefined extends StandardSchemaV1.InferInput<T>
-			? (data?: StandardSchemaV1.InferInput<T>) => Promisable<void>
-			: (data: StandardSchemaV1.InferInput<T>) => Promisable<void>
-		: () => Promisable<void>;
+	undefined extends InferEventInputType<T["type"]>
+		? (data?: InferEventInputType<T["type"]>) => Promisable<void>
+		: (data: InferEventInputType<T["type"]>) => Promisable<void>;
 
 type _InferEventOutputHandlers<T extends EventDefinitions> = {
 	[K in keyof T]: K extends `${infer First}.${infer Rest}`
@@ -37,6 +46,6 @@ export type InferEventOutputHandler<T extends EventDefinitions[keyof EventDefini
 ) => void;
 
 export type InferEventOutputHandlerCallback<T extends EventDefinitions[keyof EventDefinitions]> =
-	T extends StandardSchemaV1
-		? (data: StandardSchemaV1.InferOutput<T>) => Promisable<void>
+	T["type"] extends StandardSchemaV1
+		? (data: StandardSchemaV1.InferOutput<T["type"]>) => Promisable<void>
 		: () => Promisable<void>;

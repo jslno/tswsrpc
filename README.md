@@ -83,7 +83,9 @@ import { tswsrpc } from "tswsrpc";
 import { z } from "zod";
 
 export const serverEvents = tswsrpc.$eventRegistry({
-  message: z.string(),
+  message: {
+    type: z.string(),
+  },
 });
 ```
 
@@ -93,7 +95,7 @@ client.ts
 import { client } from "tswsrpc/client";
 
 export const clientEvents = client.$eventRegistry({
-  "nested.ping": null,
+  "nested.ping": {},
 });
 ```
 
@@ -139,6 +141,7 @@ socket.on.nested.ping(() => {
   socket.emit.message("PONG");
 });
 ```
+
 ---
 
 This setup establishes a bidirectional messaging system with minimal configuration.
@@ -149,14 +152,12 @@ This setup establishes a bidirectional messaging system with minimal configurati
 
 3. The server receives the `message` event and logs `"PONG"`.
 
-
 <div align="right"><a href="#readme-top">(&ShortUpArrow;)</a></div>
 
 ## Roadmap
 
 - [ ] Error Handling
 - [ ] Middleware Support
-- [ ] Rate Limiting
 
 <div align="right"><a href="#readme-top">(&ShortUpArrow;)</a></div>
 

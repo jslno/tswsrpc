@@ -5,11 +5,15 @@ import { client } from "./client";
 
 describe("tswsrpc", async () => {
 	const serverEvents = tswsrpc.$eventRegistry({
-		message: z.string(),
+		message: tswsrpc.$event({
+			type: z.string(),
+		}),
 	});
 
-	const clientEvents = tswsrpc.$eventRegistry({
-		"nested.message": z.string(),
+	const clientEvents = client.$eventRegistry({
+		"nested.message": client.$event({
+			type: z.string(),
+		}),
 	});
 
 	const $server = tswsrpc<typeof clientEvents>()({
