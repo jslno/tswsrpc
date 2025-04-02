@@ -35,6 +35,14 @@ describe("tswsrpc", async () => {
 			port: 8000,
 		},
 		events: serverEvents,
+		lifecycle: {
+			onConnection: () => {
+				console.log("Client Connected");
+			},
+			onListening: () => {
+				console.log("Ready to accept connections");
+			},
+		},
 	});
 
 	const socket = client<typeof serverEvents>()({

@@ -1,6 +1,5 @@
 import type { Data } from "ws";
-import type { EventDefinitions } from "./client";
-import type { EventMiddleware, InferEventOutputType } from "./types/events";
+import type { EventDefinitions, EventMiddleware, InferEventOutputType } from "./types/events";
 import type { Promisable } from "./types/utils";
 import { standardValidate } from "./utils/standard-schema";
 
