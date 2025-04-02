@@ -114,7 +114,7 @@ const server = await rpcws<typeof clientEvents>()({
   events: serverEvents,
 });
 
-server.on.pong((msg) => {
+server.on.pong(() => {
   console.log("PONG");
 });
 
@@ -135,7 +135,7 @@ const socket = client<typeof serverEvents>()({
   events: clientEvents,
 });
 
-socket.on.nested.ping((msg) => {
+socket.on.nested.ping(() => {
   console.log("PING");
   socket.emit.pong();
 });
