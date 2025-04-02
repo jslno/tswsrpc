@@ -83,7 +83,7 @@ import { rpcws } from "rpcws";
 import { z } from "zod";
 
 export const serverEvents = rpcws.$eventRegistry({
-  pong: null, // Or a type schema to pass data
+  message: z.string(),
 });
 ```
 
@@ -91,10 +91,9 @@ client.ts
 
 ```ts
 import { client } from "rpcws/client";
-import { z } from "zod";
 
 export const clientEvents = client.$eventRegistry({
-  "nested.ping": null, // Or a type schema to pass data
+  "nested.ping": null,
 });
 ```
 
@@ -114,8 +113,8 @@ const server = await rpcws<typeof clientEvents>()({
   events: serverEvents,
 });
 
-server.on.pong(() => {
-  console.log("PONG");
+server.on.message((msg) => {
+  console.log(msg);
 });
 
 server.emit.nested.ping();
@@ -137,7 +136,7 @@ const socket = client<typeof serverEvents>()({
 
 socket.on.nested.ping(() => {
   console.log("PING");
-  socket.emit.pong();
+  socket.emit.message("PONG");
 });
 ```
 ---
@@ -146,9 +145,9 @@ This setup establishes a bidirectional messaging system with minimal configurati
 
 1. The server emits a `nested.ping` event.
 
-2. The client receives the event, logs `"PING"`, and responds with `pong`.
+2. The client receives the event, logs `"PING"`, and responds with `message`.
 
-3. The server receives the `pong` event and logs `"PONG"`.
+3. The server receives the `message` event and logs `"PONG"`.
 
 
 <div align="right"><a href="#readme-top">(&ShortUpArrow;)</a></div>
