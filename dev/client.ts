@@ -1,6 +1,6 @@
 import { client as wsClient } from "rpcws/client";
-import type { serverEvents } from ".";
 import { z } from "zod";
+import type { serverEvents } from ".";
 
 export const clientEvents = wsClient.$eventRegistry({
 	"root.message": z.string(),
