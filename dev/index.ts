@@ -22,7 +22,7 @@ const main = async () => {
 
 	console.log("Websocket server running on ws://localhost:8000");
 
-	await server.emit;
+	await server.emit.root.message("PING");
 };
 
 void main();

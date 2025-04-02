@@ -5,9 +5,12 @@ import type {
 	InferEventInputHandlers,
 	InferEventOutputHandlers,
 } from "../types/events";
-import { eventRegistry as $eventRegistry, event as $event } from "../event";
+import {
+	eventRegistry as $eventRegistry,
+	event as $event,
+	onMessage,
+} from "../event";
 import { type Promisable, type Prettify } from "../types/utils";
-import { standardValidate } from "../utils/standard-schema";
 
 export type ClientOptions = {
 	address: string | URL;
@@ -33,30 +36,7 @@ const _client =
 		>;
 
 		ctx.ws.onmessage = async ({ data }) => {
-			const body = JSON.parse(data.toString("utf-8"));
-
-			if ("event" in body) {
-				const handler = ctx.events.get(body.event);
-				const def = ctx.options.events?.[body.event];
-
-				let eventData = body.data;
-				if (def?.use) {
-					const middlewares = Array.isArray(def.use) ? def.use : [def.use];
-
-					for (const middleware of middlewares) {
-						const res = await middleware(eventData);
-						if (!!res) {
-							eventData = res;
-						}
-					}
-				}
-
-				if (!!handler) {
-					await handler(
-						def?.type ? await standardValidate(def.type, eventData) : eventData,
-					);
-				}
-			}
+			await onMessage(ctx, data);
 		};
 
 		return {
