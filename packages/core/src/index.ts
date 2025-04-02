@@ -1,14 +1,13 @@
 import type { TSWSRPCOptions } from "./types/options";
 import { init } from "./init";
 import { createEmitProxy, createOnProxy } from "./proxy";
-import { standardValidate } from "./utils/standard-schema";
 import type { Prettify } from "./types/utils";
 import type {
 	EventDefinitions,
 	InferEventInputHandlers,
 	InferEventOutputHandlers,
 } from "./types/events";
-import { eventRegistry as $eventRegistry } from "./event";
+import { eventRegistry as $eventRegistry, event as $event } from "./event";
 
 const _tswsrpc =
 	<T extends EventDefinitions = {}>() =>
@@ -21,21 +20,6 @@ const _tswsrpc =
 			Readonly<InferEventOutputHandlers<Exclude<O["events"], undefined>>>
 		>;
 
-		ctx.ws.on("message", async (message) => {
-			const body = JSON.parse(message.toString("utf-8"));
-
-			if ("event" in body) {
-				const handler = ctx.events.get(body.event);
-				const type = ctx.options.events?.[body.event];
-
-				if (!!handler) {
-					await handler(type ? await standardValidate(type, body.data) : body.data);
-				}
-			}
-		});
-
-		ctx.ws.on("close", () => console.log("Client disconnected"));
-
 		return {
 			$context: ctx,
 			emit,
@@ -44,4 +28,5 @@ const _tswsrpc =
 	};
 export const tswsrpc = Object.assign(_tswsrpc, {
 	$eventRegistry,
+	$event,
 });

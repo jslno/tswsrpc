@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { serverEvents } from ".";
 
 export const clientEvents = wsClient.$eventRegistry({
-	"root.message": z.string(),
+	"root.message": { type: z.string() },
 });
 
 export const client = wsClient<typeof serverEvents>()({

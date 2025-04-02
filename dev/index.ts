@@ -3,7 +3,9 @@ import { z } from "zod";
 import type { clientEvents } from "./client";
 
 export const serverEvents = tswsrpc.$eventRegistry({
-	message: z.string(),
+	message: {
+		type: z.string(),
+	},
 });
 
 const main = async () => {
@@ -20,7 +22,7 @@ const main = async () => {
 
 	console.log("Websocket server running on ws://localhost:8000");
 
-	await server.emit;
+	await server.emit.root.message("PING");
 };
 
 void main();

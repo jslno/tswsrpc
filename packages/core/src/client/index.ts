@@ -5,11 +5,10 @@ import type {
 	InferEventInputHandlers,
 	InferEventOutputHandlers,
 } from "../types/events";
-import { eventRegistry as $eventRegistry } from "../event";
+import { eventRegistry as $eventRegistry, event as $event, onMessage } from "../event";
 import { type Promisable, type Prettify } from "../types/utils";
-import { standardValidate } from "../utils/standard-schema";
 
-type ClientOptions = {
+export type ClientOptions = {
 	address: string | URL;
 	events?: EventDefinitions;
 	advanced?: WebSocket.ClientOptions;
@@ -33,16 +32,7 @@ const _client =
 		>;
 
 		ctx.ws.onmessage = async ({ data }) => {
-			const body = JSON.parse(data.toString("utf-8"));
-
-			if ("event" in body) {
-				const handler = ctx.events.get(body.event);
-				const type = ctx.options.events?.[body.event];
-
-				if (!!handler) {
-					await handler(type ? await standardValidate(type, body.data) : body.data);
-				}
-			}
+			await onMessage(ctx, data);
 		};
 
 		return {
@@ -53,6 +43,7 @@ const _client =
 	};
 export const client = Object.assign(_client, {
 	$eventRegistry,
+	$event,
 });
 
 export type { EventDefinitions } from "../types/events";
