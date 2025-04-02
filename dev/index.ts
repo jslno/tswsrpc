@@ -1,13 +1,13 @@
-import { rpcwebsocket } from "rpcwebsocket";
+import { tswsrpc } from "tswsrpc";
 import { z } from "zod";
 import type { clientEvents } from "./client";
 
-export const serverEvents = rpcwebsocket.$eventRegistry({
+export const serverEvents = tswsrpc.$eventRegistry({
 	message: z.string(),
 });
 
 const main = async () => {
-	const server = await rpcwebsocket<typeof clientEvents>()({
+	const server = await tswsrpc<typeof clientEvents>()({
 		server: {
 			port: 8000,
 		},

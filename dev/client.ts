@@ -1,4 +1,4 @@
-import { client as wsClient } from "rpcwebsocket/client";
+import { client as wsClient } from "tswsrpc/client";
 import { z } from "zod";
 import type { serverEvents } from ".";
 

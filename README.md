@@ -12,15 +12,15 @@
 </div>
 <br />
 <div align="center">
-    <h3>rpcwebsocket</h3>
+    <h3>tswsrpc</h3>
     <p>
         TypeSafe WebSocket events.
         <br />
         <br />
         <br />
-        <a href="https://github.com/jslno/rpcwebsocket/issues/new">Report Bug</a>
+        <a href="https://github.com/jslno/tswsrpc/issues/new">Report Bug</a>
         &middot;
-        <a href="https://github.com/jslno/rpcwebsocket/issues/new">Request Feature</a>
+        <a href="https://github.com/jslno/tswsrpc/issues/new">Request Feature</a>
     </p>
 </div>
 <br />
@@ -62,10 +62,10 @@ If not done already, install a schema validator. This example uses [`Zod`][zod-u
 npm install zod
 ```
 
-Add `rpcwebsocket` to your project:
+Add `tswsrpc` to your project:
 
 ```sh
-npm install rpcwebsocket@latest
+npm install tswsrpc@latest
 ```
 
 <div align="right"><a href="#readme-top">(&ShortUpArrow;)</a></div>
@@ -79,10 +79,10 @@ Before setting up the server and client, define the events they will handle. The
 server.ts
 
 ```ts
-import { rpcwebsocket } from "rpcwebsocket";
+import { tswsrpc } from "tswsrpc";
 import { z } from "zod";
 
-export const serverEvents = rpcwebsocket.$eventRegistry({
+export const serverEvents = tswsrpc.$eventRegistry({
   message: z.string(),
 });
 ```
@@ -90,7 +90,7 @@ export const serverEvents = rpcwebsocket.$eventRegistry({
 client.ts
 
 ```ts
-import { client } from "rpcwebsocket/client";
+import { client } from "tswsrpc/client";
 
 export const clientEvents = client.$eventRegistry({
   "nested.ping": null,
@@ -106,7 +106,7 @@ server.ts
 ```ts
 import type { clientEvents } from "./client"; // Import as type
 
-const server = await rpcwebsocket<typeof clientEvents>()({
+const server = await tswsrpc<typeof clientEvents>()({
   server: {
     port: 8000,
   },
@@ -172,18 +172,18 @@ Distributed under the MIT License. See [LICENSE.md][license-url] for more inform
 
 <div align="right"><a href="#readme-top">(&ShortUpArrow;)</a></div>
 
-[forks-shield]: https://img.shields.io/github/forks/jslno/rpcwebsocket.svg?style=for-the-badge
-[forks-url]: https://github.com/jslno/rpcwebsocket/network/members
-[stars-shield]: https://img.shields.io/github/stars/jslno/rpcwebsocket.svg?style=for-the-badge
-[stars-url]: https://github.com/jslno/rpcwebsocket/stargazers
-[issues-shield]: https://img.shields.io/github/issues/jslno/rpcwebsocket.svg?style=for-the-badge
-[issues-url]: https://github.com/jslno/rpcwebsocket/issues
-[license-shield]: https://img.shields.io/github/license/jslno/rpcwebsocket.svg?style=for-the-badge
-[license-url]: https://github.com/jslno/rpcwebsocket/blob/master/LICENSE.txt
-[github-release-shield]: https://img.shields.io/github/v/release/jslno/rpcwebsocket?style=for-the-badge
-[github-release-url]: github.com/jslno/rpcwebsocket/releases/latest
-[npm-release-shield]: https://img.shields.io/npm/v/rpcwebsocket?style=for-the-badge
-[npm-release-url]: www.npmjs.com/package/rpcwebsocket/v/latest
+[forks-shield]: https://img.shields.io/github/forks/jslno/tswsrpc.svg?style=for-the-badge
+[forks-url]: https://github.com/jslno/tswsrpc/network/members
+[stars-shield]: https://img.shields.io/github/stars/jslno/tswsrpc.svg?style=for-the-badge
+[stars-url]: https://github.com/jslno/tswsrpc/stargazers
+[issues-shield]: https://img.shields.io/github/issues/jslno/tswsrpc.svg?style=for-the-badge
+[issues-url]: https://github.com/jslno/tswsrpc/issues
+[license-shield]: https://img.shields.io/github/license/jslno/tswsrpc.svg?style=for-the-badge
+[license-url]: https://github.com/jslno/tswsrpc/blob/master/LICENSE.txt
+[github-release-shield]: https://img.shields.io/github/v/release/jslno/tswsrpc?style=for-the-badge
+[github-release-url]: github.com/jslno/tswsrpc/releases/latest
+[npm-release-shield]: https://img.shields.io/npm/v/tswsrpc?style=for-the-badge
+[npm-release-url]: www.npmjs.com/package/tswsrpc/v/latest
 [zod-url]: https://github.com/colinhacks/zod
 [standardschema-url]: https://standardschema.dev
 [standardschema-lib-url]: https://standardschema.dev/#what-schema-libraries-implement-the-spec

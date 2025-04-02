@@ -13,7 +13,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "rpcwebsocket": "workspace:*",
+    "tswsrpc": "workspace:*",
     "zod": "^3.24.2"
   }
 }

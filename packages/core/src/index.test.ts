@@ -1,18 +1,18 @@
 import { describe, expect, it, vi } from "vitest";
-import { rpcwebsocket } from ".";
+import { tswsrpc } from ".";
 import { z } from "zod";
 import { client } from "./client";
 
-describe("rpcwebsocket", async () => {
-	const serverEvents = rpcwebsocket.$eventRegistry({
+describe("tswsrpc", async () => {
+	const serverEvents = tswsrpc.$eventRegistry({
 		message: z.string(),
 	});
 
-	const clientEvents = rpcwebsocket.$eventRegistry({
+	const clientEvents = tswsrpc.$eventRegistry({
 		"nested.message": z.string(),
 	});
 
-	const $server = rpcwebsocket<typeof clientEvents>()({
+	const $server = tswsrpc<typeof clientEvents>()({
 		server: {
 			port: 8000,
 		},
