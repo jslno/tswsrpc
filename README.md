@@ -83,9 +83,9 @@ import { tswsrpc } from "tswsrpc";
 import { z } from "zod";
 
 export const serverEvents = tswsrpc.$eventRegistry({
-  message: {
+  message: tswsrpc.$event({
     type: z.string(),
-  },
+  }),
 });
 ```
 
@@ -95,7 +95,7 @@ client.ts
 import { client } from "tswsrpc/client";
 
 export const clientEvents = client.$eventRegistry({
-  "nested.ping": {},
+  "nested.ping": client.$event({}),
 });
 ```
 
