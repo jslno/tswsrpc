@@ -1,4 +1,4 @@
-import { client as wsClient } from "rpcws/client";
+import { client as wsClient } from "wsrpc/client";
 import { z } from "zod";
 import type { serverEvents } from ".";
 

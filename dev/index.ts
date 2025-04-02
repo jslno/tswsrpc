@@ -1,13 +1,13 @@
-import { rpcws } from "rpcws";
+import { wsrpc } from "wsrpc";
 import { z } from "zod";
 import type { clientEvents } from "./client";
 
-export const serverEvents = rpcws.$eventRegistry({
+export const serverEvents = wsrpc.$eventRegistry({
 	message: z.string(),
 });
 
 const main = async () => {
-	const server = await rpcws<typeof clientEvents>()({
+	const server = await wsrpc<typeof clientEvents>()({
 		server: {
 			port: 8000,
 		},

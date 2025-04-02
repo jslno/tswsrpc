@@ -1,7 +1,7 @@
 import type { ServerOptions } from "ws";
 import type { EventDefinitions } from "./events";
 
-export type RPCWSOptions = {
+export type WSRPCOptions = {
 	server?: ServerOptions;
 	events?: EventDefinitions;
 };

@@ -1,18 +1,18 @@
 import { describe, expect, it, vi } from "vitest";
-import { rpcws } from ".";
+import { wsrpc } from ".";
 import { z } from "zod";
 import { client } from "./client";
 
-describe("rpcws", async () => {
-	const serverEvents = rpcws.$eventRegistry({
+describe("wsrpc", async () => {
+	const serverEvents = wsrpc.$eventRegistry({
 		message: z.string(),
 	});
 
-	const clientEvents = rpcws.$eventRegistry({
+	const clientEvents = wsrpc.$eventRegistry({
 		"nested.message": z.string(),
 	});
 
-	const $server = rpcws<typeof clientEvents>()({
+	const $server = wsrpc<typeof clientEvents>()({
 		server: {
 			port: 8000,
 		},

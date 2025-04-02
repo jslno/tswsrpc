@@ -1,8 +1,8 @@
-import type { RPCWSOptions } from "./types/options";
+import type { WSRPCOptions } from "./types/options";
 import { WebSocketServer, WebSocket } from "ws";
 import type { Promisable } from "./types/utils";
 
-export const init = async <O extends RPCWSOptions>(options?: O) => {
+export const init = async <O extends WSRPCOptions>(options?: O) => {
 	const server = new WebSocketServer(options?.server);
 
 	const ws = await new Promise<WebSocket>((resolve) => {
@@ -18,12 +18,12 @@ export const init = async <O extends RPCWSOptions>(options?: O) => {
 		events: new Map<string, (data: any) => Promisable<void>>(),
 	};
 
-	return ctx satisfies RPCWSContext;
+	return ctx satisfies WSRPCContext;
 };
 
-export type RPCWSContext = {
+export type WSRPCContext = {
 	server: WebSocketServer;
 	ws: WebSocket;
-	options: RPCWSOptions;
+	options: WSRPCOptions;
 	events: Map<string, (data: any) => Promisable<void>>;
 };
