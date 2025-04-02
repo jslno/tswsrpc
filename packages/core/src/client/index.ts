@@ -5,8 +5,9 @@ import type {
 	InferEventInputHandlers,
 	InferEventOutputHandlers,
 } from "../types/events";
-import { eventRegistry as $eventRegistry, event as $event, onMessage } from "../event";
+import { eventRegistry as $eventRegistry, event as $event } from "../event";
 import { type Promisable, type Prettify } from "../types/utils";
+import { initClient } from "./init";
 
 export type ClientOptions = {
 	address: string | URL;
@@ -22,13 +23,7 @@ export type ClientOptions = {
 const _client =
 	<T extends EventDefinitions = {}>() =>
 	<O extends ClientOptions>(options: O) => {
-		const ws = new WebSocket(options.address, options.advanced);
-
-		const ctx = {
-			options,
-			ws,
-			events: new Map<string, (data: any) => Promisable<void>>(),
-		};
+		const ctx = initClient(options);
 
 		const emit = createEmitProxy(ctx) as any as Prettify<Readonly<InferEventInputHandlers<T>>>;
 
@@ -36,31 +31,14 @@ const _client =
 			Readonly<InferEventOutputHandlers<Exclude<O["events"], undefined>>>
 		>;
 
-		if (ctx.options.lifecycle?.onOpen) {
-			ctx.ws.onopen = ctx.options.lifecycle.onOpen;
-		}
-
-		if (ctx.options.lifecycle?.onClose) {
-			ctx.ws.onclose = ctx.options.lifecycle.onClose;
-		}
-
-		if (ctx.options.lifecycle?.onError) {
-			ctx.ws.onerror = ctx.options.lifecycle.onError;
-		}
-
-		ctx.ws.onmessage = async ({ data }) => {
-			await onMessage(ctx, data);
-		};
-
 		return {
 			$context: ctx,
 			emit,
 			on,
 		};
 	};
+
 export const client = Object.assign(_client, {
 	$eventRegistry,
 	$event,
 });
-
-export type { EventDefinitions } from "../types/events";

@@ -6,25 +6,7 @@ import { onMessage } from "./event";
 export const init = async <O extends TSWSRPCOptions>(options?: O) => {
 	const server = new WebSocketServer(options?.server);
 
-	if (options?.lifecycle?.onError) {
-		server.on("error", options.lifecycle.onError);
-	}
-
-	if (options?.lifecycle?.onHeaders) {
-		server.on("headers", options.lifecycle.onHeaders);
-	}
-
-	if (options?.lifecycle?.onClose) {
-		server.on("close", options.lifecycle.onClose);
-	}
-
-	if (options?.lifecycle?.onListening) {
-		server.on("listening", options.lifecycle.onListening);
-	}
-
-	if (options?.lifecycle?.onClientError) {
-		server.on("wsClientError", options.lifecycle.onClientError);
-	}
+	initLifecycleEvents(server, options);
 
 	const ws = await new Promise<WebSocket>((resolve) => {
 		server.on("connection", async (ws, req) => {
@@ -52,4 +34,26 @@ export type TSWSRPCContext = {
 	ws: WebSocket;
 	options: TSWSRPCOptions;
 	events: Map<string, (data: any) => Promisable<void>>;
+};
+
+const initLifecycleEvents = (server: WebSocketServer, options: TSWSRPCOptions | undefined) => {
+	if (options?.lifecycle?.onError) {
+		server.on("error", options.lifecycle.onError);
+	}
+
+	if (options?.lifecycle?.onHeaders) {
+		server.on("headers", options.lifecycle.onHeaders);
+	}
+
+	if (options?.lifecycle?.onClose) {
+		server.on("close", options.lifecycle.onClose);
+	}
+
+	if (options?.lifecycle?.onListening) {
+		server.on("listening", options.lifecycle.onListening);
+	}
+
+	if (options?.lifecycle?.onClientError) {
+		server.on("wsClientError", options.lifecycle.onClientError);
+	}
 };
