@@ -8,15 +8,15 @@ export const eventRegistry = <T extends EventDefinitions>(defs: T): T => defs;
 
 export const event = <
 	T extends EventDefinitions[keyof EventDefinitions]["type"],
-	D extends EventDefinitions[keyof EventDefinitions] & { type?: T },
->(
-	def: D & {
+	D extends {
 		type?: T;
 		use?:
 			| ((data: any) => Promisable<InferEventOutputType<T> | void>)
 			| ((data: any) => Promisable<InferEventOutputType<T> | void>)[];
 	},
-): D => def;
+>(
+	def: D,
+) => def satisfies EventDefinitions[keyof EventDefinitions];
 
 export const runMiddlewares = async (
 	data: any,
