@@ -1,6 +1,6 @@
 {
     "name": "tswsrpc",
-    "description": "",
+    "description": "TypeSafe WebSocket events.",
     "version": "0.0.3",
     "type": "module",
     "main": "./dist/index.js",
@@ -24,6 +24,7 @@
         "directory": "packages/core"
     },
     "license": "MIT",
+    "readme": "README.md",
     "devDependencies": {
         "@biomejs/biome": "^1.9.4",
         "@types/node": "^22.13.14",
@@ -32,6 +33,9 @@
         "typescript": "^5.8.2",
         "vitest": "^3.1.1",
         "zod": "^3.24.2"
+    },
+    "dependencies": {
+        "ws": "^8.18.1"
     },
     "exports": {
         ".": {
@@ -65,7 +69,5 @@
             }
         }
     },
-    "dependencies": {
-        "ws": "^8.18.1"
-    }
+    "files": ["dist"]
 }
