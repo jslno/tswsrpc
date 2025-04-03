@@ -1,5 +1,10 @@
 import type { Data } from "ws";
-import type { EventDefinitions, EventMiddleware, InferEventOutputType } from "./types/events";
+import type {
+	EventDefinitions,
+	EventHandler,
+	EventMiddleware,
+	InferEventOutputType,
+} from "./types/events";
 import type { Promisable } from "./types/utils";
 import { standardValidate } from "./utils/standard-schema";
 
@@ -37,7 +42,7 @@ export const runMiddlewares = async (
 
 export const onMessage = async (
 	ctx: {
-		events: Map<string, (data: any) => Promisable<void>>;
+		events: Map<string, EventHandler>;
 		options: {
 			events?: EventDefinitions;
 		};
@@ -50,10 +55,17 @@ export const onMessage = async (
 		const handler = ctx.events.get(body.event);
 		const def = ctx.options.events?.[body.event];
 
-		let eventData = await runMiddlewares(body.data, def?.use);
-
 		if (!!handler) {
-			await handler(def?.type ? await standardValidate(def.type, eventData) : eventData);
+			try {
+				let eventData = await runMiddlewares(body.data, def?.use);
+
+				await handler(
+					def?.type ? await standardValidate(def.type, eventData) : eventData,
+					undefined,
+				);
+			} catch (err) {
+				await handler(undefined, err);
+			}
 		}
 	}
 };

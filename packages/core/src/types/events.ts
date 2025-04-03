@@ -3,6 +3,8 @@ import type { Prettify, Promisable, UnionToIntersection } from "./utils";
 
 export type EventMiddleware = (data: any) => Promisable<any>;
 
+export type EventHandler = (data: any, error: any) => Promisable<void>;
+
 export type EventDefinitions = {
 	[key: string]: {
 		type?: StandardSchemaV1 | null | undefined;
@@ -45,7 +47,7 @@ export type InferEventOutputHandler<T extends EventDefinitions[keyof EventDefini
 	cb: InferEventOutputHandlerCallback<T>,
 ) => void;
 
-export type InferEventOutputHandlerCallback<T extends EventDefinitions[keyof EventDefinitions]> =
-	T["type"] extends StandardSchemaV1
-		? (data: StandardSchemaV1.InferOutput<T["type"]>) => Promisable<void>
-		: () => Promisable<void>;
+export type InferEventOutputHandlerCallback<T extends EventDefinitions[keyof EventDefinitions]> = (
+	data?: T["type"] extends StandardSchemaV1 ? StandardSchemaV1.InferOutput<T["type"]> : undefined,
+	error?: any,
+) => Promisable<void>;

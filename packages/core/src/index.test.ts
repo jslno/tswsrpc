@@ -15,10 +15,7 @@ describe("tswsrpc", async () => {
 			}),
 			use: (data) => {
 				if (data.role !== "admin") {
-					return {
-						...data,
-						error: "UNAUTHORIZED",
-					};
+					throw new Error("UNAUTHORIZED");
 				}
 			},
 		}),
@@ -71,8 +68,8 @@ describe("tswsrpc", async () => {
 
 		await new Promise((resolve) => setTimeout(resolve, 100));
 
-		expect(serverMessageHandler).toHaveBeenCalledWith(clientToServerMsg);
-		expect(socketMessageHandler).toHaveBeenCalledWith(serverToClientMsg);
+		expect(serverMessageHandler).toHaveBeenCalledWith(clientToServerMsg, undefined);
+		expect(socketMessageHandler).toHaveBeenCalledWith(serverToClientMsg, undefined);
 
 		server.$context.server.close();
 	});
@@ -94,8 +91,8 @@ describe("tswsrpc", async () => {
 
 		expect(serverMessageHandler).toHaveBeenCalledOnce();
 
-		const serverMessageHandler2 = vi.fn((data) => {
-			expect(data.error).toEqual("UNAUTHORIZED");
+		const serverMessageHandler2 = vi.fn((data, error) => {
+			expect(error.message).toEqual("UNAUTHORIZED");
 		});
 		server.on.middleware.message(serverMessageHandler2);
 		await socket.emit.middleware.message({
@@ -104,7 +101,7 @@ describe("tswsrpc", async () => {
 
 		await new Promise((resolve) => setTimeout(resolve, 100));
 
-		expect(serverMessageHandler2).toHaveBeenCalledOnce();
+		expect(serverMessageHandler2).toHaveBeenCalledTimes(1);
 
 		server.$context.server.close();
 	});

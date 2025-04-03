@@ -1,5 +1,5 @@
 import type WebSocket from "ws";
-import type { Promisable } from "./types/utils";
+import type { EventHandler } from "./types/events";
 
 export const createEmitProxy = (ctx: {
 	ws: WebSocket;
@@ -33,14 +33,14 @@ const _createEmitProxy = (
 };
 
 export const createOnProxy = (ctx: {
-	events: Map<string, (data: any) => Promisable<void>>;
+	events: Map<string, EventHandler>;
 }) => {
 	return _createOnProxy(ctx);
 };
 
 const _createOnProxy = (
 	ctx: {
-		events: Map<string, (data: any) => Promisable<void>>;
+		events: Map<string, EventHandler>;
 	},
 	path: string = "",
 ) => {
