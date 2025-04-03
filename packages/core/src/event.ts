@@ -3,10 +3,12 @@ import type {
 	EventDefinitions,
 	EventHandler,
 	EventMiddleware,
+	EventHandlerContext,
 	InferEventOutputType,
 } from "./types/events";
 import type { Promisable } from "./types/utils";
 import { standardValidate } from "./utils/standard-schema";
+import { TSWSRPCError } from "./error";
 
 export const eventRegistry = <T extends EventDefinitions>(defs: T): T => defs;
 
@@ -23,14 +25,18 @@ export const event = <
 ) => def satisfies EventDefinitions[keyof EventDefinitions];
 
 export const runMiddlewares = async (
-	data: any,
+	ctx: EventHandlerContext,
 	middlewares?: EventMiddleware | EventMiddleware[],
 ) => {
+	let data = ctx.data;
 	if (middlewares) {
 		const middlewaresArr = Array.isArray(middlewares) ? middlewares : [middlewares];
 
 		for (const middleware of middlewaresArr) {
-			const res = await middleware(data);
+			const res = await middleware({
+				...ctx,
+				data,
+			});
 			if (!!res) {
 				data = res;
 			}
@@ -39,6 +45,14 @@ export const runMiddlewares = async (
 
 	return data;
 };
+
+export const createEventHandlerCtx = <T>(data: T) =>
+	({
+		data,
+		error: (message: string) => {
+			throw new TSWSRPCError(message);
+		},
+	}) satisfies EventHandlerContext;
 
 export const onMessage = async (
 	ctx: {
@@ -57,14 +71,16 @@ export const onMessage = async (
 
 		if (!!handler) {
 			try {
-				let eventData = await runMiddlewares(body.data, def?.use);
+				let eventData = await runMiddlewares(createEventHandlerCtx(body.data), def?.use);
 
 				await handler(
-					def?.type ? await standardValidate(def.type, eventData) : eventData,
+					createEventHandlerCtx(
+						def?.type ? await standardValidate(def.type, eventData) : eventData,
+					),
 					undefined,
 				);
 			} catch (err) {
-				await handler(undefined, err);
+				await handler(createEventHandlerCtx(undefined), err);
 			}
 		}
 	}

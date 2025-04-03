@@ -13,9 +13,9 @@ describe("tswsrpc", async () => {
 				role: z.string(),
 				error: z.string().optional(),
 			}),
-			use: (data) => {
-				if (data.role !== "admin") {
-					throw new Error("UNAUTHORIZED");
+			use: (ctx) => {
+				if (ctx.data.role !== "admin") {
+					return ctx.error("UNAUTHORIZED");
 				}
 			},
 		}),
@@ -53,11 +53,11 @@ describe("tswsrpc", async () => {
 		const clientToServerMsg = "PONG";
 		const serverToClientMsg = "PING";
 
-		const serverMessageHandler = vi.fn((msg) => {
-			expect(msg).toEqual(clientToServerMsg);
+		const serverMessageHandler = vi.fn((ctx) => {
+			expect(ctx.data).toEqual(clientToServerMsg);
 		});
-		const socketMessageHandler = vi.fn((msg) => {
-			expect(msg).toEqual(serverToClientMsg);
+		const socketMessageHandler = vi.fn((ctx) => {
+			expect(ctx.data).toEqual(serverToClientMsg);
 			socket.emit.message(clientToServerMsg);
 		});
 
@@ -68,8 +68,8 @@ describe("tswsrpc", async () => {
 
 		await new Promise((resolve) => setTimeout(resolve, 100));
 
-		expect(serverMessageHandler).toHaveBeenCalledWith(clientToServerMsg, undefined);
-		expect(socketMessageHandler).toHaveBeenCalledWith(serverToClientMsg, undefined);
+		expect(serverMessageHandler).toHaveBeenCalledOnce();
+		expect(socketMessageHandler).toHaveBeenCalledOnce();
 
 		server.$context.server.close();
 	});
@@ -77,8 +77,8 @@ describe("tswsrpc", async () => {
 	it("should allow basic middlewares", async () => {
 		const server = await $server;
 
-		const serverMessageHandler = vi.fn((data) => {
-			expect(data.role).toEqual("admin");
+		const serverMessageHandler = vi.fn((ctx) => {
+			expect(ctx.data.role).toEqual("admin");
 		});
 
 		server.on.middleware.message(serverMessageHandler);
@@ -91,7 +91,7 @@ describe("tswsrpc", async () => {
 
 		expect(serverMessageHandler).toHaveBeenCalledOnce();
 
-		const serverMessageHandler2 = vi.fn((data, error) => {
+		const serverMessageHandler2 = vi.fn((_, error) => {
 			expect(error.message).toEqual("UNAUTHORIZED");
 		});
 		server.on.middleware.message(serverMessageHandler2);
@@ -102,6 +102,30 @@ describe("tswsrpc", async () => {
 		await new Promise((resolve) => setTimeout(resolve, 100));
 
 		expect(serverMessageHandler2).toHaveBeenCalledTimes(1);
+
+		server.$context.server.close();
+	});
+
+	it("should allow throwing errors inside event handlers", async () => {
+		const server = await $server;
+
+		const serverMessageHandler = vi.fn((ctx, error) => {
+			if (error) {
+				expect(error.message).toEqual("UNAUTHORIZED");
+				return;
+			}
+			if (ctx.data !== "admin") {
+				return ctx.error("UNAUTHORIZED");
+			}
+		});
+
+		server.on.message(serverMessageHandler);
+
+		await socket.emit.message("user");
+
+		await new Promise((resolve) => setTimeout(resolve, 100));
+
+		expect(serverMessageHandler).toHaveBeenCalledTimes(2);
 
 		server.$context.server.close();
 	});
