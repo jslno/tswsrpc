@@ -38,8 +38,8 @@ type InferInferType<T, D> = [unknown] extends D ? (D extends {} ? D : T) : D;
 
 export type InferEventInputHandler<T extends EventDefinitions[keyof EventDefinitions]> =
 	undefined extends InferEventInputType<T["type"]>
-		? <D>(data?: InferEventInputType<T["type"]>) => Promisable<void>
-		: <D>(data: InferEventInputType<T["type"]>) => Promisable<void>;
+		? (data?: InferEventInputType<T["type"]>) => Promisable<void>
+		: (data: InferEventInputType<T["type"]>) => Promisable<void>;
 
 type _InferEventOutputHandlers<T extends EventDefinitions> = {
 	[K in keyof T]: K extends `${infer First}.${infer Rest}`
