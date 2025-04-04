@@ -70,15 +70,11 @@ export const onMessage = async (
 		const def = ctx.options.events?.[body.event];
 
 		if (!!handler) {
+			let eventData = def?.type ? await standardValidate(def.type, body.data) : body.data;
 			try {
-				let eventData = await runMiddlewares(createEventHandlerCtx(body.data), def?.use);
+				eventData = await runMiddlewares(createEventHandlerCtx(eventData), def?.use);
 
-				await handler(
-					createEventHandlerCtx(
-						def?.type ? await standardValidate(def.type, eventData) : eventData,
-					),
-					undefined,
-				);
+				await handler(createEventHandlerCtx(eventData), undefined);
 			} catch (err) {
 				await handler(createEventHandlerCtx(undefined), err);
 			}

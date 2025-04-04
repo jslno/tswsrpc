@@ -44,7 +44,12 @@ const _createOnProxy = (
 	},
 	path: string = "",
 ) => {
-	const callback = (data: any) => {
+	const callback = (
+		data: any,
+		options?: {
+			$Infer: any;
+		},
+	) => {
 		ctx.events.set(path, data);
 	};
 
