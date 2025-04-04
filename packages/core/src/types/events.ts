@@ -34,6 +34,8 @@ export type InferEventInputType<T extends EventDefinitions[keyof EventDefinition
 export type InferEventOutputType<T extends EventDefinitions[keyof EventDefinitions]["type"]> =
 	T extends StandardSchemaV1 ? StandardSchemaV1.InferOutput<T> : undefined;
 
+type InferInferType<T, D> = [unknown] extends D ? (D extends {} ? D : T) : D;
+
 export type InferEventInputHandler<T extends EventDefinitions[keyof EventDefinitions]> =
 	undefined extends InferEventInputType<T["type"]>
 		? (data?: InferEventInputType<T["type"]>) => Promisable<void>
@@ -49,15 +51,26 @@ export type InferEventOutputHandlers<T extends EventDefinitions> = Prettify<
 	UnionToIntersection<_InferEventOutputHandlers<T>>
 >;
 
-export type InferEventOutputHandler<T extends EventDefinitions[keyof EventDefinitions]> = (
-	cb: InferEventOutputHandlerCallback<T>,
+export type InferEventOutputHandler<T extends EventDefinitions[keyof EventDefinitions]> = <D>(
+	cb: InferEventOutputHandlerCallback<T, D>,
+	options?: {
+		$Infer?: {
+			data?: D;
+		};
+	},
 ) => void;
 
-export type InferEventOutputHandlerCallback<T extends EventDefinitions[keyof EventDefinitions]> = (
+export type InferEventOutputHandlerCallback<
+	T extends EventDefinitions[keyof EventDefinitions],
+	D = any,
+> = (
 	ctx: {
-		data?: T["type"] extends StandardSchemaV1
-			? StandardSchemaV1.InferOutput<T["type"]>
-			: undefined;
+		data?: InferInferType<
+			T["type"] extends StandardSchemaV1
+				? StandardSchemaV1.InferOutput<T["type"]>
+				: undefined,
+			D
+		>;
 		error: (message: string) => TSWSRPCError;
 	},
 	error?: any,

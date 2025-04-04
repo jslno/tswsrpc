@@ -71,14 +71,10 @@ export const onMessage = async (
 
 		if (!!handler) {
 			try {
-				let eventData = await runMiddlewares(createEventHandlerCtx(body.data), def?.use);
+				let eventData = def?.type ? await standardValidate(def.type, body.data) : body.data;
+				eventData = await runMiddlewares(createEventHandlerCtx(eventData), def?.use);
 
-				await handler(
-					createEventHandlerCtx(
-						def?.type ? await standardValidate(def.type, eventData) : eventData,
-					),
-					undefined,
-				);
+				await handler(createEventHandlerCtx(eventData), undefined);
 			} catch (err) {
 				await handler(createEventHandlerCtx(undefined), err);
 			}
