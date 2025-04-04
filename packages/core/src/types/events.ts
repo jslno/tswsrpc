@@ -1,7 +1,15 @@
+import type { TSWSRPCError } from "../error";
 import type { StandardSchemaV1 } from "../utils/standard-schema";
 import type { Prettify, Promisable, UnionToIntersection } from "./utils";
 
-export type EventMiddleware = (data: any) => Promisable<any>;
+export type EventHandlerContext = {
+	data: any;
+	error: (message: string) => TSWSRPCError;
+};
+
+export type EventMiddleware = (data: EventHandlerContext) => Promisable<any>;
+
+export type EventHandler = (data: EventHandlerContext, error: any) => Promisable<void>;
 
 export type EventDefinitions = {
 	[key: string]: {
@@ -45,7 +53,12 @@ export type InferEventOutputHandler<T extends EventDefinitions[keyof EventDefini
 	cb: InferEventOutputHandlerCallback<T>,
 ) => void;
 
-export type InferEventOutputHandlerCallback<T extends EventDefinitions[keyof EventDefinitions]> =
-	T["type"] extends StandardSchemaV1
-		? (data: StandardSchemaV1.InferOutput<T["type"]>) => Promisable<void>
-		: () => Promisable<void>;
+export type InferEventOutputHandlerCallback<T extends EventDefinitions[keyof EventDefinitions]> = (
+	ctx: {
+		data?: T["type"] extends StandardSchemaV1
+			? StandardSchemaV1.InferOutput<T["type"]>
+			: undefined;
+		error: (message: string) => TSWSRPCError;
+	},
+	error?: any,
+) => Promisable<void | TSWSRPCError>;

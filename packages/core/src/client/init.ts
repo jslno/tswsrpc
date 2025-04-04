@@ -1,7 +1,7 @@
 import WebSocket from "ws";
 import type { ClientOptions } from ".";
-import type { Promisable } from "../types/utils";
 import { onMessage } from "../event";
+import type { EventHandler } from "../types/events";
 
 export const initClient = <O extends ClientOptions>(options: O) => {
 	const ws = new WebSocket(options.address, options.advanced);
@@ -9,7 +9,7 @@ export const initClient = <O extends ClientOptions>(options: O) => {
 	const ctx = {
 		options,
 		ws,
-		events: new Map<string, (data: any) => Promisable<void>>(),
+		events: new Map<string, EventHandler>(),
 	};
 
 	initLifecycleEvents(ctx);
@@ -24,7 +24,7 @@ export const initClient = <O extends ClientOptions>(options: O) => {
 export type TSWSRPCClientContext = {
 	ws: WebSocket;
 	options: ClientOptions;
-	events: Map<string, (data: any) => Promisable<void>>;
+	events: Map<string, EventHandler>;
 };
 
 const initLifecycleEvents = (ctx: TSWSRPCClientContext) => {

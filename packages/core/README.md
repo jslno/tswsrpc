@@ -31,12 +31,19 @@
         <li><a href="#features">Features</a></li>
         <li><a href="#installation">Installation</a></li>
         <li>
-            <a href="#usage">Usage</a>
-            <ul>
-                <li><a href="#1-register-events">Register Events</a></li>
-                <li><a href="#2-create-server-instance">Create Server Instance</a></li>
-                <li><a href="#3-create-client-instance">Create Client Instance</a></li>
-            </ul>
+          <a href="#basic-usage">Basic Usage</a>
+          <ul>
+            <li><a href="#1-register-events">Register Events</a></li>
+            <li><a href="#2-create-server-instance">Create Server Instance</a></li>
+            <li><a href="#3-create-client-instance">Create Client Instance</a><li>
+          </ul>
+        </li>
+        <li>
+          <a href="#additional-usage">Additional Usage</a>
+          <ul>
+            <li><a href="#middlewares">Middlewares</a></li>
+            <li><a href="#error-handling">Error Handling</a></li>
+          </ul>
         </li>
         <li><a href="#roadmap">Roadmap</a></li>
         <li><a href="#dependencies">Dependencies</a></li>
@@ -71,7 +78,7 @@ npm install tswsrpc@latest
 
 <div align="right"><a href="#readme-top">(&ShortUpArrow;)</a></div>
 
-## Usage
+## Basic Usage
 
 ### 1. Register Events
 
@@ -116,8 +123,8 @@ const server = await tswsrpc<typeof clientEvents>()({
   events: serverEvents,
 });
 
-server.on.message((msg) => {
-  console.log(msg);
+server.on.message((ctx) => {
+  console.log(ctx.data);
 });
 
 server.emit.nested.ping();
@@ -155,9 +162,53 @@ This setup establishes a bidirectional messaging system with minimal configurati
 
 <div align="right"><a href="#readme-top">(&ShortUpArrow;)</a></div>
 
-## Roadmap
+## Additional Usage
 
-- [ ] Error Handling
+### Middlewares
+
+Middlewares allow you to preprocess, validate, and modify incoming event data before execution. You can use a single middleware or an array of middlewares for tasks like authentication and data transformation.
+
+In the example below, the middleware validates an access token before processing the event:
+
+```ts
+export const events = tswsrpc.$eventRegistry({
+  // or client.$eventRegistry
+  message: tswsrpc.$event({
+    // or client.$event
+    type: z.object({
+      accessToken: z.string(),
+    }),
+    use: async (ctx, _error) => {
+      // Or an array of middlewares
+      const isValid = await validateAccessToken(ctx.data?.accessToken);
+      if (!isValid) {
+        return ctx.error("UNAUTHORIZED");
+        // or throw ctx.error("UNAUTHORIZED");
+      }
+
+      return; // or return modified data.
+    },
+  }),
+});
+```
+
+### Error Handling
+
+```ts
+server.on.message((ctx, error) => {
+  if (error) {
+    // Handle error
+  }
+
+  const isValid = await validateAccessToken(ctx.data?.accessToken);
+  if (!isValid) {
+    return ctx.error("UNAUTHORIZED");
+    // or throw ctx.error("UNAUTHORIZED");
+  }
+});
+```
+
+## Roadmap
 
 <div align="right"><a href="#readme-top">(&ShortUpArrow;)</a></div>
 

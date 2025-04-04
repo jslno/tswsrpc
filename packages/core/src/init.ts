@@ -1,7 +1,7 @@
 import type { TSWSRPCOptions } from "./types/options";
 import { WebSocketServer, WebSocket } from "ws";
-import type { Promisable } from "./types/utils";
 import { onMessage } from "./event";
+import type { EventHandler } from "./types/events";
 
 export const init = async <O extends TSWSRPCOptions>(options?: O) => {
 	const server = new WebSocketServer(options?.server);
@@ -21,7 +21,7 @@ export const init = async <O extends TSWSRPCOptions>(options?: O) => {
 		server,
 		ws,
 		options: (options || {}) as O,
-		events: new Map<string, (data: any) => Promisable<void>>(),
+		events: new Map<string, EventHandler>(),
 	};
 
 	ctx.ws.on("message", onMessage.bind(null, ctx));
@@ -33,7 +33,7 @@ export type TSWSRPCContext = {
 	server: WebSocketServer;
 	ws: WebSocket;
 	options: TSWSRPCOptions;
-	events: Map<string, (data: any) => Promisable<void>>;
+	events: Map<string, EventHandler>;
 };
 
 const initLifecycleEvents = (server: WebSocketServer, options: TSWSRPCOptions | undefined) => {
